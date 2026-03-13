@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sorting and Searching Algorithms</title>
+
+<style>
+body{
+    font-family: Arial;
+    padding:20px;
+    background:#f4f4f4;
+}
+
+h2{
+    color:#333;
+}
+
+input{
+    padding:8px;
+    width:300px;
+}
+
+button{
+    padding:8px 15px;
+    margin:5px;
+    cursor:pointer;
+}
+
+.result{
+    background:white;
+    padding:15px;
+    margin-top:20px;
+    border-radius:5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Sorting and Searching Algorithms Demo</h2>
+
+<label>Enter numbers (comma separated):</label><br>
+<input type="text" id="numbers" value="34,12,5,66,23,9,1,45">
+
+<br><br>
+
+<label>Search value:</label><br>
+<input type="number" id="searchValue" value="23">
+
+<br><br>
+
+<button onclick="runAlgorithms()">Run Algorithms</button>
+
+<div class="result">
+<pre id="output"></pre>
+</div>
+
+<script>
+
+// Selection Sort
+function selectionSort(arr){
+
+    let start = performance.now();
+
+    for(let i=0;i<arr.length;i++){
+
+        let min=i;
+
+        for(let j=i+1;j<arr.length;j++){
+            if(arr[j] < arr[min]){
+                min=j;
+            }
+        }
+
+        let temp=arr[i];
+        arr[i]=arr[min];
+        arr[min]=temp;
+    }
+
+    let end = performance.now();
+
+    return {
+        sorted:arr,
+        time:(end-start).toFixed(5)
+    };
+}
+
+
+// Merge Sort
+function mergeSort(arr){
+
+    if(arr.length <= 1){
+        return arr;
+    }
+
+    let mid = Math.floor(arr.length/2);
+
+    let left = mergeSort(arr.slice(0,mid));
+    let right = mergeSort(arr.slice(mid));
+
+    return merge(left,right);
+}
+
+function merge(left,right){
+
+    let result=[];
+
+    while(left.length && right.length){
+
+        if(left[0] < right[0]){
+            result.push(left.shift());
+        }
+        else{
+            result.push(right.shift());
+        }
+
+    }
+
+    return result.concat(left,right);
+}
+
+
+// Sequential Search
+function sequentialSearch(arr,target){
+
+    let start = performance.now();
+
+    for(let i=0;i<arr.length;i++){
+
+        if(arr[i] == target){
+
+            let end = performance.now();
+
+            return {
+                index:i,
+                time:(end-start).toFixed(5)
+            };
+        }
+    }
+
+    let end = performance.now();
+
+    return {
+        index:-1,
+        time:(end-start).toFixed(5)
+    };
+}
+
+
+// Binary Search
+function binarySearch(arr,target){
+
+    let start = performance.now();
+
+    let left = 0;
+    let right = arr.length - 1;
+
+    while(left <= right){
+
+        let mid = Math.floor((left+right)/2);
+
+        if(arr[mid] == target){
+
+            let end = performance.now();
+
+            return {
+                index:mid,
+                time:(end-start).toFixed(5)
+            };
+        }
+
+        if(arr[mid] < target){
+            left = mid + 1;
+        }
+        else{
+            right = mid - 1;
+        }
+
+    }
+
+    let end = performance.now();
+
+    return {
+        index:-1,
+        time:(end-start).toFixed(5)
+    };
+}
+
+
+
+// Run All Algorithms
+function runAlgorithms(){
+
+    let numbers = document.getElementById("numbers").value;
+
+    let data = numbers.split(",").map(Number);
+
+    let searchValue = Number(document.getElementById("searchValue").value);
+
+    let output="";
+
+    output += "Original Dataset: " + data + "\n\n";
+
+
+
+    // Selection Sort
+    let selection = selectionSort([...data]);
+
+    output += "Selection Sort Result: " + selection.sorted + "\n";
+    output += "Selection Sort Time: " + selection.time + " ms\n\n";
+
+
+
+    // Merge Sort
+    let start = performance.now();
+    let merge = mergeSort([...data]);
+    let mergeTime = (performance.now()-start).toFixed(5);
+
+    output += "Merge Sort Result: " + merge + "\n";
+    output += "Merge Sort Time: " + mergeTime + " ms\n\n";
+
+
+
+    // Sequential Search
+    let seq = sequentialSearch(data,searchValue);
+
+    output += "Sequential Search Index: " + seq.index + "\n";
+    output += "Sequential Search Time: " + seq.time + " ms\n\n";
+
+
+
+    // Binary Search (uses sorted array)
+    let bin = binarySearch(merge,searchValue);
+
+    output += "Binary Search Index (sorted array): " + bin.index + "\n";
+    output += "Binary Search Time: " + bin.time + " ms\n\n";
+
+
+
+    document.getElementById("output").textContent = output;
+
+}
+
+</script>
+
+</body>
+</html>
